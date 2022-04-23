@@ -1,18 +1,49 @@
-Linux kernel
-============
+Assignmnet - 2
 
-There are several guides for kernel developers and users. These guides can
-be rendered in a number of formats, like HTML and PDF. Please read
-Documentation/admin-guide/README.rst first.
+Step 1: Start with the Assignment-1 setup
 
-In order to build the documentation, use ``make htmldocs`` or
-``make pdfdocs``.  The formatted documentation can also be read online at:
+Step 2: Modify the cpuid.c file and vmx.c file as follows
 
-    https://www.kernel.org/doc/html/latest/
+Step 3: Return the total no. of exits in eax for leafnode for eax values as 0x4fffffff
 
-There are various text files in the Documentation/ subdirectory,
-several of them using the Restructured Text markup notation.
+Step 4: Retrun the number of exits in eax for the exit type provided in ecx when the leaf node value is 0x4ffffffd
 
-Please read the Documentation/process/changes.rst file, as it contains the
-requirements for building and running the kernel, and information about
-the problems which may result by upgrading your kernel.
+Step 5: We can find the modified values for cpuid.c under arch/x86/kvm/cpuid.c and for vmx.c under arch/x86/kvm/vmx/vmx.c
+
+Step 6: We declare 2 extern variables in vmx.c one for total exits and an array to store total exits for each reason
+
+Step 7: We increment the total exits each time there is an exit and we increment the corresponding value for that reason's index in the array
+
+Step 8: save the modifications in both the files
+
+Step 9: Run the following sequence of commands
+
+Step 10: make -j 4 modules
+
+Step 11: make INSTALL_MOD_STRIP=1 modules_install && make install
+
+Step 12: run "lsmod | grep kvm" to see if the module is already loaded
+
+Step 13: if the comamnd returns that the module is already loaded run "rmmod kvm" and "rmmod kvm_intel" if both are present
+
+Step 14: run "modprobe kvm"
+
+Step 15: Now in order to test the modifications we made to kvm we need to install a VM inside our VM
+
+Step 16: From the ubuntu software center install virtual machine manager
+
+Step 17: Download the ubuntu iso file and install a ubuntu VM following the same steps followed in Assignment-1
+
+Step 18: Once installed, in the terminal of our inner VM install the cpuid package using the command "sudo apt-get install cpuid"
+
+Step 19: Now we can use the commands "cpuid -l 0x4fffffff" to see the total exits returned in eax
+
+Step 20: Screenshot (193)
+
+Step 21: We can use the command "cpuid -l 0x4fffffffd -s {exit_reason}" where exit reason is an integer for the exit reason for which we want to see the number of exits We can use it for example as "cpuid -l 0x4ffffffd -s 31" to see the number of exits due to RDMSR . Screenshot (191)
+
+Step 22: Questions for 0x4fffffffd :
+
+Step 23: The increase in the number of total exits is not stable. We sometimes see an increase of 422 exits and the other time we see an increase of 677 or 700. We notice a lot of exits for EPT violations , MSR access , IO Instructions.For a full vm reboot we noted around 1174554 exits.
+
+Step 24: The most frequent exits are EPT violations and MSR access and the least frequent exits are 0 (for VMWRITE, triple fault, etc) and there are very few exits for DR_Access,APIC access.
