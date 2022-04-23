@@ -1,4 +1,85 @@
-Assignmnet - 2
+###Assignment - 1
+
+Step 1: Download and Install VMWare Workstation.
+
+Step 2: Download ubuntu iso and create a Virtual Machine in Workstation.
+
+Step 3 : In processor setting select nested virtualization capabilities, this allows us to run a VM inside another VM
+
+Step 4: Fork the original linux repo from Linus Torvalds’ github.
+
+Step 5: Check VM’s virtualization capabilitiesusing  the command cat /proc/cpuinfo.
+
+Step 6: Install git on the VM by using the command "sudo apt-get-install git"
+
+Step 7 :Clone the repository which we forked earlier from torvalds/linux
+
+Step 8: Run cd linux to siwtch to the repo which we just cloned
+
+Step 9: In cmpe283-1.c file add the sections of code for primary procbased controls, secondary procbased controls, entry and exit controls based on the SDM.
+
+Step 10: Add the modified cmpe283-1.c file and the Makefile to a folder cmpe283 and put the folder under the cloned linux directory
+switch to the linux directory
+
+Step 11: Run "uname -a" command to check the version (check if there is a version mismatch between the cloned version and the current vm linux distribution we are running)
+
+Step 12: In order to run certain make commmands we need to run certain install "sudo apt-get install libncurses-dev flex bison openssl libssl-dev dkms libelf-dev libudev-dev libpci-dev libiberty-dev autoconf"
+
+Step 13: Follow the following sequence of commands to build and install the kernel modules
+
+Step 14: make menuconfig" (do not save any changes in the UI and exit it )
+
+Step 15: cp /boot/config-{curent version we got from "uname -a" command without braces} .config"
+
+Step 16: make oldconfig" (press enter to answer all the questions)
+
+Step 17: make prepare"
+
+Step 18:”make -j {no. of cores on the processor} modules" eg : "make -j 4 modules"
+
+Step 19 :If there is an error similar to"* No rule to make target 'debian/canonical-certs.pem'"
+
+Step 20: vi the .config file and set the system trusted keys and revocation keys strings = ""
+
+Step 21: after the "make -j 4 modules" command is sucessfuly finished
+
+Step 22: "make -j 4"
+
+Step 23: After this command is succesfully finished we will see a "is ready" statement in the end
+
+Step 24: "sudo make INSTALL_MOD_STRIP=1 modules_install"
+
+Step 25: ”sudo make install"
+
+Step 26: ”sudo reboot"
+
+Step 27: run "uname -a" to check that the version has changed (updated to our new complied module)
+
+Step 28: change directory to the drectory we created earlier "cd cmpe283"
+
+Step 29: run "make" command check if there are any errors in the file or an error asking to include license. In case of an error for license, go to the cmpe283-1.c file and at the botton add "MODULE_LICENSE("GPL v2");" and save the file.
+
+Step 30:  After the make command is successfuly executed run , check that the .ko file is created using "lsmod | grep cmpe283"
+
+Step 31: "sudo insmod cmpe283-1.ko" to insert our module
+
+Step 32: Run "dmesg" command
+
+Step 33: We can see the capability info for all the MSR which we have defined in the cmpe283-1.c file undr the heading "Module Start"
+
+Step 34: To remove the module run "sudo rmmod cmpe283-1"
+
+Step 35: run "dmesg" to check the exit message ""Module Exits"
+
+
+
+
+
+
+
+
+
+###Assignment -2
 
 Step 1: Start with the Assignment-1 setup
 
