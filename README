@@ -45,8 +45,6 @@ Step 21: after the "make -j 4 modules" command is sucessfuly finished
 
 Step 22: "make -j 4"
 
-Step 23: After this command is succesfully finished we will see a "is ready" statement in the end
-
 Step 24: "sudo make INSTALL_MOD_STRIP=1 modules_install"
 
 Step 25: ”sudo make install"
@@ -57,7 +55,7 @@ Step 27: run "uname -a" to check that the version has changed (updated to our ne
 
 Step 28: change directory to the drectory we created earlier "cd cmpe283"
 
-Step 29: run "make" command check if there are any errors in the file or an error asking to include license. In case of an error for license, go to the cmpe283-1.c file and at the botton add "MODULE_LICENSE("GPL v2");" and save the file.
+Step 29: run "make" command check if there are any errors in the file
 
 Step 30:  After the make command is successfuly executed run , check that the .ko file is created using "lsmod | grep cmpe283"
 
@@ -83,48 +81,44 @@ Step 35: run "dmesg" to check the exit message ""Module Exits"
 
 Step 1: Start with the Assignment-1 setup
 
-Step 2: Modify the cpuid.c file and vmx.c file as follows
+Step 2: Modify the cpuid.c file and vmx.c file according to the requirements.
 
-Step 3: Return the total no. of exits in eax for leafnode for eax values as 0x4fffffff
+Step 3: Store the total exits in eax for leafnode for eax equal to 0x4fffffff
 
-Step 4: Retrun the number of exits in eax for the exit type provided in ecx when the leaf node value is 0x4ffffffd
+Step 4: Store the number of exits in eax for the type of exit provided in ecx for the leaf node value 0x4ffffffd
 
-Step 5: We can find the modified values for cpuid.c under arch/x86/kvm/cpuid.c and for vmx.c under arch/x86/kvm/vmx/vmx.c
+Step 5: Increase the total exit by one if there is an exit and increment the corresponding value for that reason's index in the array
 
-Step 6: We declare 2 extern variables in vmx.c one for total exits and an array to store total exits for each reason
+Step 6: save the modifications in both the files
 
-Step 7: We increment the total exits each time there is an exit and we increment the corresponding value for that reason's index in the array
+Step 7: Run the following sequence of commands
 
-Step 8: save the modifications in both the files
+Step 8: make -j 4 modules
 
-Step 9: Run the following sequence of commands
+Step 9: make INSTALL_MOD_STRIP=1 modules_install && make install
 
-Step 10: make -j 4 modules
+Step 10: run "lsmod | grep kvm" to see if the module is already loaded
 
-Step 11: make INSTALL_MOD_STRIP=1 modules_install && make install
+Step 11: if the comamnd returns that the module is already loaded run "rmmod kvm" and "rmmod kvm_intel" if both are present
 
-Step 12: run "lsmod | grep kvm" to see if the module is already loaded
+Step 12: run "modprobe kvm"
 
-Step 13: if the comamnd returns that the module is already loaded run "rmmod kvm" and "rmmod kvm_intel" if both are present
+Step 13: Now in order to test the modifications we made to kvm we need to install a VM inside our VM
 
-Step 14: run "modprobe kvm"
+Step 14: From the ubuntu software center install virtual machine manager
 
-Step 15: Now in order to test the modifications we made to kvm we need to install a VM inside our VM
+Step 15: Download the ubuntu iso file and install a ubuntu VM following the same steps followed in Assignment-1
 
-Step 16: From the ubuntu software center install virtual machine manager
+Step 16: Once installed, in the terminal of our inner VM install the cpuid package using the command "sudo apt-get install cpuid"
 
-Step 17: Download the ubuntu iso file and install a ubuntu VM following the same steps followed in Assignment-1
+Step 17: Now we can use the commands "cpuid -l 0x4fffffff" to see the total exits returned in eax
 
-Step 18: Once installed, in the terminal of our inner VM install the cpuid package using the command "sudo apt-get install cpuid"
+Step 18: Screenshot (193)
 
-Step 19: Now we can use the commands "cpuid -l 0x4fffffff" to see the total exits returned in eax
+Step 19: We can use the command "cpuid -l 0x4fffffffd -s {exit_reason}" where exit reason is an integer for the exit reason for which we want to see the number of exits We can use it for example as "cpuid -l 0x4ffffffd -s 31" to see the number of exits due to RDMSR . Screenshot (191)
 
-Step 20: Screenshot (193)
+Step 20: Questions for 0x4fffffffd :
 
-Step 21: We can use the command "cpuid -l 0x4fffffffd -s {exit_reason}" where exit reason is an integer for the exit reason for which we want to see the number of exits We can use it for example as "cpuid -l 0x4ffffffd -s 31" to see the number of exits due to RDMSR . Screenshot (191)
+Step 21: The increase in the number of total exits is not stable. We sometimes see an increase of 422 exits and the other time we see an increase of 677 or 700. We notice a lot of exits for EPT violations , MSR access , IO Instructions.For a full vm reboot we noted around 1174554 exits.
 
-Step 22: Questions for 0x4fffffffd :
-
-Step 23: The increase in the number of total exits is not stable. We sometimes see an increase of 422 exits and the other time we see an increase of 677 or 700. We notice a lot of exits for EPT violations , MSR access , IO Instructions.For a full vm reboot we noted around 1174554 exits.
-
-Step 24: The most frequent exits are EPT violations and MSR access and the least frequent exits are 0 (for VMWRITE, triple fault, etc) and there are very few exits for DR_Access,APIC access.
+Step 22: The most frequent exits are EPT violations and MSR access and the least frequent exits are 0 (for VMWRITE, triple fault, etc) and there are very few exits for DR_Access,APIC access.
