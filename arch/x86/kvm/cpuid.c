@@ -32,6 +32,12 @@
 u32 kvm_cpu_caps[NR_KVM_CPU_CAPS] __read_mostly;
 EXPORT_SYMBOL_GPL(kvm_cpu_caps);
 
+uint64_t total_exits=0;
+EXPORT_SYMBOL(total_exits);
+
+u32 exit_per_reason[100]={0};
+EXPORT_SYMBOL(exit_per_reason);
+
 u32 xstate_required_size(u64 xstate_bv, bool compacted)
 {
 	int feature_bit = 0;
@@ -1439,12 +1445,6 @@ bool kvm_cpuid(struct kvm_vcpu *vcpu, u32 *eax, u32 *ebx,
 }
 EXPORT_SYMBOL_GPL(kvm_cpuid);
 
-uint64_t total_exits=0;
-EXPORT_SYMBOL(total_exits);
-
-u32 exit_per_reason[69]={0};
-EXPORT_SYMBOL(exit_per_reason);
-
 int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 {
 	u32 eax, ebx, ecx, edx;
@@ -1459,12 +1459,11 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
           eax= total_exits; 
      }else if(eax==0x4ffffffd){
 
-        if(ecx >=0 && ecx <=69 && ecx !=35 && ecx !=38 && ecx !=42  && ecx != 65){
+        if(ecx >=0 && ecx <=69){
+	       if (ecx !=35 && ecx !=38 && ecx !=42  && ecx != 65){
             
                     //check for returning all zeros for exit types not handled in the kvm
-                    if(ecx!=3 && ecx!=4 && ecx!=5 && ecx!=6 && ecx!=11 && ecx!=34 && ecx!=33 && ecx!=51 && ecx<63){
-                    
-                      eax = exit_per_reason[(int)ecx];
+                    eax = exit_per_reason[(int)ecx];
                     }else{
                     
                    eax= 0x00000000;
