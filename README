@@ -122,3 +122,47 @@ Step 20: Questions for 0x4fffffffd :
 Step 21: The increase in the number of total exits is not stable. We sometimes see an increase of 422 exits and the other time we see an increase of 677 or 700. We notice a lot of exits for EPT violations , MSR access , IO Instructions.For a full vm reboot we noted around 1174554 exits.
 
 Step 22: The most frequent exits are EPT violations and MSR access and the least frequent exits are 0 (for VMWRITE, triple fault, etc) and there are very few exits for DR_Access,APIC access.
+
+
+
+
+
+
+
+
+
+	•	
+Assignment 3
+
+
+
+To modify the CPUID emulation code in KVM to report back additional information when special CPUID leaf nodes are requested.
+Implemented in assignment :
+•  CPUID leaf node %eax=0x4FFFFFFE
+•  CPUID leaf node %eax=0x4FFFFFFC and exit reason as input in ecx
+
+Step 1: Start with the configuration of assignment 2
+
+Step 2: Make edit to linux/arch/x86/kvm/cpuid.c and linux/arch/x86/kvm/vmx/vmx.c to check for VM exits and time for exits.
+
+Step 3: When the leafnode eax value is 0x4FFFFFFE,Return the high 32 bits of the total time spent processing all exits in %ebx and the low 32 bits of the total time spent processing all exits in %ecx. We do this by declaring a variable which stores the total time and then adding the time spent processing each exit to this total time.
+
+Step 4: When the leafnode eax value is 0x4FFFFFFC and there is exit number provided in ecx as input, Return the time spent processing that particular exit Return the high 32 bits of the total time spent for that exit in %ebx and the low 32 bits of the total time spent for that exit in %ecx. We do this by declaring an array for all the types of possible exits and storing time spent for each exit reason in it’s array element.
+
+Step 5: Save the modifications in both the files.
+
+Step 6: Run the following commands to compile the kernel:
+	make -j 4 modules
+	
+	make INSTALL_MOD_STRIP=1 modules_install && make install
+
+		run "lsmod | grep kvm" to see if the module is already loaded
+		if the comamnd returns that the module is already loaded run "rmmod kvm" and "rmmod kvm_intel" if both are present
+		run "modprobe kvm”. 
+Step 7: To test the modifications we can open a nested VM.
+Step 8: In the terminal we type the command “cpuid -l 0x4FFFFFFE” to see time spent processing exits.
+Step 9: We then use the command “cpuid -I 0x4FFFFFFC -s {exit_reason}” to see time for processing exit for that reason.
+Questions:
+
+The increase in frequency of exits in not stable. MSR access has a very high number of exits. A full VM reboot produced 1174685 exits.
+The most frequent exits are MSR access are the most frequent and least frequent are DR_Access.
