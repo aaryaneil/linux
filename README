@@ -166,3 +166,34 @@ Questions:
 
 The increase in frequency of exits in not stable. MSR access has a very high number of exits. A full VM reboot produced 1174685 exits.
 The most frequent exits are MSR access are the most frequent and least frequent are DR_Access.
+
+
+
+
+Assignment 4
+
+Step 1: Start with assignment 3 steup.
+
+Step 2: Run dmesg command to print counts for exit for all exit reasons.
+
+
+
+With nested pageing (extended page tables):
+
+![alt text](https://github.com/aaryaneil/linux/blob/master/1.png?raw=true)
+
+
+With shadow paging:
+
+![alt text](https://github.com/aaryaneil/linux/blob/master/2.png?raw=true)
+
+
+
+
+Q 3
+->After switching to shadow paging the number of exits increased for some types.
+
+Q4
+->In shadow paging there were no EPT violations, which is as expected.
+-> INVLPG, INVPCID are two exits only observed in shadow paging.
+->There is a increase in NMI exits in shadow paging. 
