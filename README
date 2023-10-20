@@ -1,12 +1,6 @@
-# Project Guide: Kernel Module Development in a Virtual Environment
-
-This project guide covers four assignments related to kernel module development in a virtual environment using VMware Workstation. The assignments include configuring the virtual environment, modifying the KVM (Kernel-based Virtual Machine) to track and report exit reasons, and analyzing the results.
-
-Please note that these assignments assume you are working in a VMware virtual environment with nested virtualization capabilities.
-
-## Assignment 1
-
 ### Project Setup
+
+#### Assignment 1
 
 1. **VMWare Workstation Setup**
    - Download and install VMware Workstation.
@@ -66,9 +60,7 @@ Please note that these assignments assume you are working in a VMware virtual en
     - To remove the module, run `sudo rmmod cmpe283-1`.
     - Check the exit message with `dmesg` ("Module Exits").
 
-## Assignment 2
-
-### Project Setup
+#### Assignment 2
 
 1. **Start with Assignment 1 Setup**
 
@@ -99,9 +91,7 @@ Please note that these assignments assume you are working in a VMware virtual en
 9. **Test Modifications**
    - Use the `cpuid` commands to observe the total exits and exit reasons as described in Assignment 2.
 
-## Assignment 3
-
-### Project Setup
+#### Assignment 3
 
 1. **Start with Assignment 2 Setup**
 
@@ -114,9 +104,7 @@ Please note that these assignments assume you are working in a VMware virtual en
 4. **Test Modifications**
    - Inside the inner VM, use the new CPUID leaf nodes to report exit times.
 
-## Assignment 4
-
-### Project Setup
+#### Assignment 4
 
 1. **Start with Assignment 3 Setup**
 
@@ -128,9 +116,3 @@ Please note that these assignments assume you are working in a VMware virtual en
 
 4. **Record Observations**
    - Record any changes in exit counts and reasons between the two paging methods.
-
-This guide provides a structured approach to completing the assignments and analyzing the results. Be sure to document your findings and any unexpected observations along the way.
-
-[Add relevant screenshots or images if needed.]
-
-Feel free to reach out if you have any questions or need further assistance.
