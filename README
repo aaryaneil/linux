@@ -1,199 +1,136 @@
-Assignment - 1
+# Project Guide: Kernel Module Development in a Virtual Environment
 
-Step 1: Download and Install VMWare Workstation.
+This project guide covers four assignments related to kernel module development in a virtual environment using VMware Workstation. The assignments include configuring the virtual environment, modifying the KVM (Kernel-based Virtual Machine) to track and report exit reasons, and analyzing the results.
 
-Step 2: Download ubuntu iso and create a Virtual Machine in Workstation.
+Please note that these assignments assume you are working in a VMware virtual environment with nested virtualization capabilities.
 
-Step 3 : In processor setting select nested virtualization capabilities, this allows us to run a VM inside another VM
+## Assignment 1
 
-Step 4: Fork the original linux repo from Linus Torvalds’ github.
+### Project Setup
 
-Step 5: Check VM’s virtualization capabilitiesusing  the command cat /proc/cpuinfo.
+1. **VMWare Workstation Setup**
+   - Download and install VMware Workstation.
 
-Step 6: Install git on the VM by using the command "sudo apt-get-install git"
+2. **Create a Virtual Machine**
+   - Download the Ubuntu ISO.
+   - Create a Virtual Machine in VMware Workstation for Ubuntu.
 
-Step 7 :Clone the repository which we forked earlier from torvalds/linux
+3. **Enable Nested Virtualization**
+   - In the VM settings, select nested virtualization capabilities.
 
-Step 8: Run cd linux to siwtch to the repo which we just cloned
+4. **Fork the Linux Repository**
+   - Fork the original Linux repository from Linus Torvalds' GitHub.
 
-Step 9: In cmpe283-1.c file add the sections of code for primary procbased controls, secondary procbased controls, entry and exit controls based on the SDM.
+5. **Check VM's Virtualization Capabilities**
+   - Inside the VM, check virtualization capabilities using the command `cat /proc/cpuinfo`.
 
-Step 10: Add the modified cmpe283-1.c file and the Makefile to a folder cmpe283 and put the folder under the cloned linux directory
-switch to the linux directory
+6. **Install Git**
+   - Install Git on the VM using the command `sudo apt-get install git`.
 
-Step 11: Run "uname -a" command to check the version (check if there is a version mismatch between the cloned version and the current vm linux distribution we are running)
+7. **Clone the Forked Repository**
+   - Clone the forked Linux repository from your GitHub account.
 
-Step 12: In order to run certain make commmands we need to run certain install "sudo apt-get install libncurses-dev flex bison openssl libssl-dev dkms libelf-dev libudev-dev libpci-dev libiberty-dev autoconf"
+8. **Edit Source Code**
+   - Navigate to the cloned repository using `cd linux`.
+   - In `cmpe283-1.c`, add sections of code for primary procbased controls, secondary procbased controls, entry, and exit controls based on the SDM.
 
-Step 13: Follow the following sequence of commands to build and install the kernel modules
+9. **Create a Folder for Your Module**
+   - Create a folder named `cmpe283` and place the modified `cmpe283-1.c` file and the Makefile inside it.
 
-Step 14: make menuconfig" (do not save any changes in the UI and exit it )
+10. **Kernel Building and Installation**
+    - Run the following commands in sequence:
+      - `make menuconfig` (do not save any changes in the UI and exit)
+      - `cp /boot/config-<current version>` (replace `<current version>` with the version from `uname -a`)
+      - `make oldconfig` (press Enter to answer all questions)
+      - `make prepare`
+      - `make -j <number of cores>` (e.g., `make -j 4`)
+      - If you encounter an error related to 'debian/canonical-certs.pem', edit the `.config` file and set the system trusted keys and revocation keys strings to empty.
+      - `make -j <number of cores>` (e.g., `make -j 4`)
+      - `sudo make INSTALL_MOD_STRIP=1 modules_install`
+      - `sudo make install`
+      - `sudo reboot`
 
-Step 15: cp /boot/config-{curent version we got from "uname -a" command without braces} .config"
+11. **Check Kernel Version**
+    - After the reboot, run `uname -a` to check that the kernel version has changed.
 
-Step 16: make oldconfig" (press enter to answer all the questions)
+12. **Load and Test Your Module**
+    - Change directory to the `cmpe283` folder.
+    - Run `make` to compile your module.
+    - After a successful compile, check that the `.ko` file is created using `lsmod | grep cmpe283`.
+    - Insert your module with `sudo insmod cmpe283-1.ko`.
 
-Step 17: make prepare"
+13. **View Module Information**
+    - Run `dmesg` to view capability information for all the MSR defined in `cmpe283-1.c` under the heading "Module Start."
 
-Step 18:”make -j {no. of cores on the processor} modules" eg : "make -j 4 modules"
+14. **Remove Your Module**
+    - To remove the module, run `sudo rmmod cmpe283-1`.
+    - Check the exit message with `dmesg` ("Module Exits").
 
-Step 19 :If there is an error similar to"* No rule to make target 'debian/canonical-certs.pem'"
+## Assignment 2
 
-Step 20: vi the .config file and set the system trusted keys and revocation keys strings = ""
+### Project Setup
 
-Step 21: after the "make -j 4 modules" command is sucessfuly finished
+1. **Start with Assignment 1 Setup**
 
-Step 22: "make -j 4"
+2. **Modify the cpuid.c and vmx.c Files**
+   - Make the necessary modifications to the `cpuid.c` and `vmx.c` files based on the requirements for tracking exits.
 
-Step 24: "sudo make INSTALL_MOD_STRIP=1 modules_install"
+3. **Compile and Install the Kernel**
+   - Run the following commands:
+     - `make -j 4 modules`
+     - `make INSTALL_MOD_STRIP=1 modules_install && make install`
 
-Step 25: ”sudo make install"
+4. **Unload Existing KVM Modules**
+   - Run `lsmod | grep kvm`.
+   - If modules are loaded, run `rmmod kvm` and `rmmod kvm_intel`.
 
-Step 26: ”sudo reboot"
+5. **Load KVM Module**
+   - Run `modprobe kvm`.
 
-Step 27: run "uname -a" to check that the version has changed (updated to our new complied module)
+6. **Install Virtual Machine Manager**
+   - Install Virtual Machine Manager from the Ubuntu Software Center.
 
-Step 28: change directory to the drectory we created earlier "cd cmpe283"
+7. **Create an Inner VM**
+   - Download an Ubuntu ISO and install an Ubuntu VM inside your existing VM (inner VM).
 
-Step 29: run "make" command check if there are any errors in the file
+8. **Install cpuid Package**
+   - Inside the inner VM, install the `cpuid` package using `sudo apt-get install cpuid`.
 
-Step 30:  After the make command is successfuly executed run , check that the .ko file is created using "lsmod | grep cmpe283"
+9. **Test Modifications**
+   - Use the `cpuid` commands to observe the total exits and exit reasons as described in Assignment 2.
 
-Step 31: "sudo insmod cmpe283-1.ko" to insert our module
+## Assignment 3
 
-Step 32: Run "dmesg" command
+### Project Setup
 
-Step 33: We can see the capability info for all the MSR which we have defined in the cmpe283-1.c file undr the heading "Module Start"
+1. **Start with Assignment 2 Setup**
 
-Step 34: To remove the module run "sudo rmmod cmpe283-1"
+2. **Modify Kernel Code**
+   - Make edits to `linux/arch/x86/kvm/cpuid.c` and `linux/arch/x86/kvm/vmx/vmx.c` to add CPUID leaf nodes for reporting exit times.
 
-Step 35: run "dmesg" to check the exit message ""Module Exits"
+3. **Compile and Install the Kernel**
+   - Follow the steps to compile and install the modified kernel as described in Assignment 2.
 
+4. **Test Modifications**
+   - Inside the inner VM, use the new CPUID leaf nodes to report exit times.
 
+## Assignment 4
 
+### Project Setup
 
+1. **Start with Assignment 3 Setup**
 
+2. **Run dmesg to Print Exit Counts**
+   - Run `dmesg` to print counts for exit reasons.
 
+3. **Analyze Exit Counts**
+   - Compare the exit counts between nested paging and shadow paging.
 
+4. **Record Observations**
+   - Record any changes in exit counts and reasons between the two paging methods.
 
+This guide provides a structured approach to completing the assignments and analyzing the results. Be sure to document your findings and any unexpected observations along the way.
 
-###Assignment -2
+[Add relevant screenshots or images if needed.]
 
-Step 1: Start with the Assignment-1 setup
-
-Step 2: Modify the cpuid.c file and vmx.c file according to the requirements.
-
-Step 3: Store the total exits in eax for leafnode for eax equal to 0x4fffffff
-
-Step 4: Store the number of exits in eax for the type of exit provided in ecx for the leaf node value 0x4ffffffd
-
-Step 5: Increase the total exit by one if there is an exit and increment the corresponding value for that reason's index in the array
-
-Step 6: save the modifications in both the files
-
-Step 7: Run the following sequence of commands
-
-Step 8: make -j 4 modules
-
-Step 9: make INSTALL_MOD_STRIP=1 modules_install && make install
-
-Step 10: run "lsmod | grep kvm" to see if the module is already loaded
-
-Step 11: if the comamnd returns that the module is already loaded run "rmmod kvm" and "rmmod kvm_intel" if both are present
-
-Step 12: run "modprobe kvm"
-
-Step 13: Now in order to test the modifications we made to kvm we need to install a VM inside our VM
-
-Step 14: From the ubuntu software center install virtual machine manager
-
-Step 15: Download the ubuntu iso file and install a ubuntu VM following the same steps followed in Assignment-1
-
-Step 16: Once installed, in the terminal of our inner VM install the cpuid package using the command "sudo apt-get install cpuid"
-
-Step 17: Now we can use the commands "cpuid -l 0x4fffffff" to see the total exits returned in eax
-
-Step 18: Screenshot (193)
-
-Step 19: We can use the command "cpuid -l 0x4fffffffd -s {exit_reason}" where exit reason is an integer for the exit reason for which we want to see the number of exits We can use it for example as "cpuid -l 0x4ffffffd -s 31" to see the number of exits due to RDMSR . Screenshot (191)
-
-Step 20: Questions for 0x4fffffffd :
-
-Step 21: The increase in the number of total exits is not stable. We sometimes see an increase of 422 exits and the other time we see an increase of 677 or 700. We notice a lot of exits for EPT violations , MSR access , IO Instructions.For a full vm reboot we noted around 1174554 exits.
-
-Step 22: The most frequent exits are EPT violations and MSR access and the least frequent exits are 0 (for VMWRITE, triple fault, etc) and there are very few exits for DR_Access,APIC access.
-
-
-
-
-
-
-
-
-
-	•	
-Assignment 3
-
-
-
-To modify the CPUID emulation code in KVM to report back additional information when special CPUID leaf nodes are requested.
-Implemented in assignment :
-•  CPUID leaf node %eax=0x4FFFFFFE
-•  CPUID leaf node %eax=0x4FFFFFFC and exit reason as input in ecx
-
-Step 1: Start with the configuration of assignment 2
-
-Step 2: Make edit to linux/arch/x86/kvm/cpuid.c and linux/arch/x86/kvm/vmx/vmx.c to check for VM exits and time for exits.
-
-Step 3: When the leafnode eax value is 0x4FFFFFFE,Return the high 32 bits of the total time spent processing all exits in %ebx and the low 32 bits of the total time spent processing all exits in %ecx. We do this by declaring a variable which stores the total time and then adding the time spent processing each exit to this total time.
-
-Step 4: When the leafnode eax value is 0x4FFFFFFC and there is exit number provided in ecx as input, Return the time spent processing that particular exit Return the high 32 bits of the total time spent for that exit in %ebx and the low 32 bits of the total time spent for that exit in %ecx. We do this by declaring an array for all the types of possible exits and storing time spent for each exit reason in it’s array element.
-
-Step 5: Save the modifications in both the files.
-
-Step 6: Run the following commands to compile the kernel:
-	make -j 4 modules
-	
-	make INSTALL_MOD_STRIP=1 modules_install && make install
-
-		run "lsmod | grep kvm" to see if the module is already loaded
-		if the comamnd returns that the module is already loaded run "rmmod kvm" and "rmmod kvm_intel" if both are present
-		run "modprobe kvm”. 
-Step 7: To test the modifications we can open a nested VM.
-Step 8: In the terminal we type the command “cpuid -l 0x4FFFFFFE” to see time spent processing exits.
-Step 9: We then use the command “cpuid -I 0x4FFFFFFC -s {exit_reason}” to see time for processing exit for that reason.
-Questions:
-
-The increase in frequency of exits in not stable. MSR access has a very high number of exits. A full VM reboot produced 1174685 exits.
-The most frequent exits are MSR access are the most frequent and least frequent are DR_Access.
-
-
-
-
-Assignment 4
-
-Step 1: Start with assignment 3 steup.
-
-Step 2: Run dmesg command to print counts for exit for all exit reasons.
-
-
-
-With nested pageing (extended page tables):
-
-![alt text](https://github.com/aaryaneil/linux/blob/master/1.png?raw=true)
-
-
-With shadow paging:
-
-![alt text](https://github.com/aaryaneil/linux/blob/master/2.png?raw=true)
-
-
-
-
-Q 3
-->After switching to shadow paging the number of exits increased for some types.
-
-Q4
-->In shadow paging there were no EPT violations, which is as expected.
--> INVLPG, INVPCID are two exits only observed in shadow paging.
-->There is a increase in NMI exits in shadow paging. 
+Feel free to reach out if you have any questions or need further assistance.
